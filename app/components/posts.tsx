@@ -1,41 +1,47 @@
+"use client";
+import React, { useState } from "react";
+import InfiniteScroll from "react-infinite-scroll-component";
 import type { Post as PostType } from "@/components/post";
 import Post from "@/components/post";
-import React from "react";
+import PostsSkeleton from "@/components/skeletons/posts";
+import { gridLayout } from "@/utils/styles";
 
-async function getData() {
-  const key = process.env.DUMMY_API_KEY;
-  if (!key) throw new Error("Failed to fetch data");
-
-  const res = await fetch("https://dummyapi.io/data/v1/post", {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      "app-id": key,
-    },
-  });
-  // The return value is *not* serialized
-  // You can return Date, Map, Set, etc.
-
-  // Recommendation: handle errors
-  if (!res.ok) {
-    // This will activate the closest `error.js` Error Boundary
-    throw new Error("Failed to fetch data");
-  }
-
-  return res.json();
+interface PostsProps {
+  hasMore: boolean;
+  initialPosts: PostType[];
+  nextPage: number;
 }
 
-async function Posts() {
-  const { data } = await getData();
+function Posts(props: PostsProps) {
+  const [hasMore, setHasMore] = useState(props.hasMore);
+  const [posts, setPosts] = useState(props.initialPosts);
+  const [nextPage, setNextPage] = useState(props.nextPage);
+  const getMorePosts = async () => {
+    const response = await fetch(`/api/posts?page=${nextPage}`);
+    const newPosts = await response.json();
+    setPosts((post) => [...post, ...newPosts.data]);
+    setNextPage((page) => page + 1);
+    setHasMore(
+      Math.ceil(newPosts.total / newPosts.limit) - newPosts.page !== 0
+    );
+  };
 
   return (
-    <div className="grid gap-5 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-      {data.map((post: PostType) => (
-        <React.Fragment key={post.id}>
-          <Post {...post} />
-        </React.Fragment>
-      ))}
-    </div>
+    <InfiniteScroll
+      dataLength={posts.length}
+      next={getMorePosts}
+      hasMore={hasMore}
+      loader={<PostsSkeleton numberOfPosts={8} />}
+      endMessage={<h4>Nothing more to show</h4>}
+    >
+      <div className={gridLayout}>
+        {posts.map((post: PostType) => (
+          <React.Fragment key={post.id}>
+            <Post {...post} />
+          </React.Fragment>
+        ))}
+      </div>
+    </InfiniteScroll>
   );
 }
 

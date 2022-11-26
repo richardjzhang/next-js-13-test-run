@@ -1,5 +1,8 @@
 import dayjs from "dayjs";
 
+export const postClass =
+  "mb-2 w-full h-80 object-cover rounded-2xl shadow shadow-slate-400";
+
 export interface Post {
   id: string;
   text: string;
@@ -17,10 +20,10 @@ export interface Post {
 }
 
 function Post(props: Post) {
-  const { image, owner, publishDate, text } = props;
+  const { image, publishDate, text } = props;
   return (
     <div>
-      <img className="mb-2 w-full h-80 object-cover rounded-2xl" src={image} />
+      <img className={postClass} src={image} />
       <div className="text-sm text-gray-500 font-semibold">
         {dayjs(publishDate).format("MMMM DD YYYY")}
       </div>

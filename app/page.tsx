@@ -1,12 +1,14 @@
 import Posts from "@/components/posts";
+import Header from "@/components/header";
+import { getPosts } from "@/utils/api";
 
-function Home() {
+async function Home() {
+  const initialPosts = await getPosts();
   return (
-    <div className="p-12 bg-gray-50">
-      <h1 className="mb-10 font-mono text-6xl font-semibold">Dummy Posts</h1>
-      {/* @ts-expect-error Server Component */}
-      <Posts />
-    </div>
+    <>
+      <Header />
+      <Posts hasMore initialPosts={initialPosts.data} nextPage={1} />
+    </>
   );
 }
 
