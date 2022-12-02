@@ -9,6 +9,9 @@ async function getPosts(page?: NextApiRequest["query"]["page"]) {
   const res = await fetch(
     `https://dummyapi.io/data/v1/post?page=${page || FIRST_PAGE}`,
     {
+      // cache: "no-store", -> this is for fetching fresh data every time (SSR)
+      // next: { revalidate: 10 }, -> this is for revalidating after a timed interval (ISR)
+      cache: "force-cache", // -> this is static data fetching (SSG)
       method: "GET",
       headers: {
         "Content-Type": "application/json",

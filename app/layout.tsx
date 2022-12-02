@@ -1,4 +1,4 @@
-import "globals.css";
+import 'globals.css';
 
 export default function RootLayout({
   children,
@@ -13,7 +13,7 @@ export default function RootLayout({
       */}
       <head />
       <body>
-        <div className="p-12 bg-gray-50">{children}</div>
+        <div className="p-12 bg-stone-100">{children}</div>
       </body>
     </html>
   );
